@@ -36,9 +36,10 @@ builds:
     # Defaults are 386 and amd64.
     goarch:
       - amd64
-      - arm
       - arm64
-
+    ignore:
+      - goos: windows
+        goarch: arm64
 archives:
   - name_template: "jx-release-version-{{ .Os }}-{{ .Arch }}"
     format_overrides:
@@ -54,7 +55,8 @@ checksum:
   # Accepted options are sha256, sha512, sha1, crc32, md5, sha224 and sha384.
   # Default is sha256.
   algorithm: sha256
-
+changelog:
+  disable: true
 release:
   # You can change the name of the GitHub release.
   # Default is `{{.Tag}}`
