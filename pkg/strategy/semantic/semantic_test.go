@@ -1,12 +1,12 @@
 package semantic
 
 import (
+	archiver "github.com/jm33-m0/arc/v2"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/Masterminds/semver/v3"
-	"github.com/mholt/archiver"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

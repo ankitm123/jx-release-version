@@ -9,7 +9,7 @@ import (
 	"github.com/Masterminds/semver/v3"
 	"github.com/jenkins-x-plugins/jx-release-version/v2/pkg/strategy/fromtag"
 	"github.com/jenkins-x-plugins/jx-release-version/v2/pkg/strategy/semantic"
-	"github.com/mholt/archiver"
+	"github.com/jm33-m0/arc/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -134,7 +134,7 @@ func setupGitRepos(t *testing.T) {
 		gitRepoPath := filepath.Join("testdata", repoName)
 		err := os.RemoveAll(gitRepoPath)
 		require.NoErrorf(t, err, "failed to delete %s", gitRepoPath)
-		err = archiver.Unarchive(filepath.Join("testdata", fmt.Sprintf("%s.tar.gz", repoName)), gitRepoPath)
+		err = arc.Unarchive(filepath.Join("testdata", fmt.Sprintf("%s.tar.gz", repoName)), gitRepoPath)
 		require.NoErrorf(t, err, "failed to decompress git repository at %s", gitRepoPath)
 	}
 }
