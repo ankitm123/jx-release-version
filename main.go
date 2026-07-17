@@ -36,6 +36,7 @@ var (
 		commitHeadlines      string
 		nextVersion          string
 		outputFormat         string
+		strictSemver         bool
 		tag                  bool
 		tagPrefix            string
 		pushTag              bool
@@ -52,6 +53,7 @@ func init() {
 	flag.StringVar(&options.commitHeadlines, "commit-headlines", getEnvWithDefault("COMMIT_HEADLINES", ""), "The commit headline(s) to use for semantic next version instead of the commit()s of a repository. Default to empty.")
 	flag.StringVar(&options.nextVersion, "next-version", getEnvWithDefault("NEXT_VERSION", "auto"), "The strategy to calculate the next version: auto, semantic, from-file, increment or manual. Default to the NEXT_VERSION env var.")
 	flag.StringVar(&options.outputFormat, "output-format", getEnvWithDefault("OUTPUT_FORMAT", "{{.Major}}.{{.Minor}}.{{.Patch}}"), "The output format of the next version. Default to the OUTPUT_FORMAT env var.")
+	flag.BoolVar(&options.strictSemver, "strict-semver", false, "Use strict semver validation for the manual strategy. Rejects partial versions (e.g. '1', '1.2') and versions with leading zeros (e.g. '2026.06.29').")
 	flag.BoolVar(&options.debug, "debug", os.Getenv("JX_LOG_LEVEL") == "debug", "Print debug logs. Enabled by default if the JX_LOG_LEVEL env var is set to 'debug'.")
 	flag.BoolVar(&options.printVersion, "version", false, "Just print the version and do nothing.")
 	flag.BoolVar(&options.printPreviousVersion, "print-previous-version", false, "Instead of printing the next version, print the previous (current) version detected by the previous-version strategy.")
@@ -151,10 +153,12 @@ func versionReader() strategy.VersionReader {
 	case "manual":
 		versionReader = manual.Strategy{
 			Version: strategyArg,
+			Strict:  options.strictSemver,
 		}
 	default:
 		versionReader = manual.Strategy{
 			Version: options.previousVersion,
+			Strict:  options.strictSemver,
 		}
 	}
 
@@ -203,10 +207,12 @@ func versionBumper() strategy.VersionBumper {
 	case "manual":
 		versionBumper = manual.Strategy{
 			Version: strategyArg,
+			Strict:  options.strictSemver,
 		}
 	default:
 		versionBumper = manual.Strategy{
 			Version: options.previousVersion,
+			Strict:  options.strictSemver,
 		}
 	}
 

@@ -22,6 +22,7 @@ It accepts the following CLI flags:
 - `-commit-headlines`: the [commit headlines to use to generate the next semantic version](#pass-commit-headlines). Can also be set using the `COMMIT_HEADLINES` environment variable. Default to ``.
 - `-next-version`: the [strategy to use to calculate the next version](#calculating—the-next-version). Can also be set using the `NEXT_VERSION` environment variable. Default to `auto`.
 - `-output-format`: the [output format of the next release version](#output-format). Can also be set using the `OUTPUT_FORMAT` environment variable. Default to `{{.Major}}.{{.Minor}}.{{.Patch}}`.
+- `-strict-semver`: if enabled, [uses strict semver validation](#manual) for the `manual` strategy. Rejects partial versions (e.g. `1`, `1.2`) and versions with leading zeros (e.g. `2026.06.29`).
 - `-tag`: if enabled, [a new tag will be created](#tag). Can also be set using the `TAG` environment variable with the `"TRUE"` value.
 - `-tag-prefix`: the prefix for the new tag - prefixed before the output. Can also be set using the `TAG_PREFIX` environment variable. Default to `"v"`.
 - `-push-tag`: if enabled, the new tag will be pushed to the `origin` remote. Can also be set using the `PUSH_TAG` environment variable. Default to `true`.
@@ -90,9 +91,12 @@ The `from-file` strategy will read the previous version from a file. Supported f
 
 The `manual` strategy can be used if you already know the previous version, and just want `jx-release-version` to use it.
 
+By default, it uses [relaxed semver parsing](https://pkg.go.dev/github.com/Masterminds/semver/v3#NewVersion) which coerces partial versions (e.g. `1` → `1.0.0`, `1.2` → `1.2.0`). To enable strict validation (which rejects partial versions and versions with leading zeros), use the `-strict-semver` flag.
+
 **Usage**:
 - `jx-release-version -previous-version=manual:1.2.3`
 - `jx-release-version -previous-version=1.2.3` - the `manual` prefix is optional
+- `jx-release-version -strict-semver -previous-version=manual:1.2.3` - strict validation (rejects partial versions like `1` or `1.2`, and versions with leading zeros like `2026.06.29`)
 
 ### Print the previous version
 
@@ -166,9 +170,12 @@ The `increment` strategy can be used if you want to increment a specific compone
 
 The `manual` strategy can be used if you already know the next version, and just want `jx-release-version` to use it.
 
+By default, it uses [relaxed semver parsing](https://pkg.go.dev/github.com/Masterminds/semver/v3#NewVersion) which coerces partial versions (e.g. `1` → `1.0.0`, `1.2` → `1.2.0`). To enable strict validation (which rejects partial versions and versions with leading zeros), use the `-strict-semver` flag.
+
 **Usage**:
 - `jx-release-version -next-version=manual:1.2.3`
 - `jx-release-version -next-version=1.2.3` - the `manual` prefix is optional
+- `jx-release-version -strict-semver -next-version=manual:1.2.3` - strict validation (rejects partial versions like `1` or `1.2`, and versions with leading zeros like `2026.06.29`)
 
 ## Output format
 
