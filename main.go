@@ -39,6 +39,7 @@ var (
 		strictSemver         bool
 		tag                  bool
 		tagPrefix            string
+		tagSuffix            string
 		pushTag              bool
 		fetchTags            bool
 		gitName              string
@@ -59,6 +60,7 @@ func init() {
 	flag.BoolVar(&options.printPreviousVersion, "print-previous-version", false, "Instead of printing the next version, print the previous (current) version detected by the previous-version strategy.")
 	flag.BoolVar(&options.tag, "tag", os.Getenv("TAG") == "true", "Perform a git tag")
 	flag.StringVar(&options.tagPrefix, "tag-prefix", getEnvWithDefault("TAG_PREFIX", "v"), "Prefix to use for the git tag")
+	flag.StringVar(&options.tagSuffix, "tag-suffix", getEnvWithDefault("TAG_SUFFIX", ""), "Use with tag flag, adds the given suffix to the tag. Typically something like -pre")
 	flag.BoolVar(&options.pushTag, "push-tag", getEnvWithDefault("PUSH_TAG", "true") == "true", "Use with tag flag, pushes a git tag to the remote branch")
 	flag.BoolVar(&options.fetchTags, "fetch-tags", getEnvWithDefault("FETCH_TAGS", "") == "true", "Fetch tags from the remote origin before detecting the previous version")
 	flag.StringVar(&options.gitName, "git-user", getEnvWithDefault("GIT_NAME", ""), "Name is the personal name of the author and the committer of a commit, use to override Git config")
@@ -106,7 +108,7 @@ func main() {
 
 	if options.tag {
 		tagOptions := tag.Tag{
-			FormattedVersion: options.tagPrefix + output,
+			FormattedVersion: options.tagPrefix + output + options.tagSuffix,
 			Dir:              options.dir,
 			PushTag:          options.pushTag,
 			GitName:          options.gitName,
