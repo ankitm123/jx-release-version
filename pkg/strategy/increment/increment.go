@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
+	"github.com/jenkins-x-plugins/jx-release-version/v2/pkg/strategy"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
 )
 
@@ -11,7 +12,7 @@ type Strategy struct {
 	ComponentToIncrement string
 }
 
-func (s Strategy) BumpVersion(previous semver.Version) (*semver.Version, error) {
+func (s Strategy) BumpVersion(previous semver.Version, tagSuffix string) (*semver.Version, error) {
 	var next semver.Version
 	switch strings.ToLower(s.ComponentToIncrement) {
 	case "major":
@@ -22,7 +23,7 @@ func (s Strategy) BumpVersion(previous semver.Version) (*semver.Version, error) 
 		next = previous.IncMinor()
 	default:
 		log.Logger().Debug("Incrementing patch component")
-		next = previous.IncPatch()
+		next = strategy.IncPatch(previous, tagSuffix)
 	}
 	return &next, nil
 }

@@ -71,7 +71,7 @@ func (s Strategy) ReadVersion() (*semver.Version, error) {
 	return semver.NewVersion(version)
 }
 
-func (s Strategy) BumpVersion(_ semver.Version) (*semver.Version, error) {
+func (s Strategy) BumpVersion(_ semver.Version, _ string) (*semver.Version, error) {
 	return s.ReadVersion()
 }
 

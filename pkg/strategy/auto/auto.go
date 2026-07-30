@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Masterminds/semver/v3"
+	"github.com/jenkins-x-plugins/jx-release-version/v2/pkg/strategy"
 	"github.com/jenkins-x-plugins/jx-release-version/v2/pkg/strategy/fromtag"
 	"github.com/jenkins-x-plugins/jx-release-version/v2/pkg/strategy/semantic"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
@@ -29,16 +30,16 @@ func (s Strategy) ReadVersion() (*semver.Version, error) {
 	return nil, fmt.Errorf("failed to read previous version from tags: %w", err)
 }
 
-func (s Strategy) BumpVersion(previous semver.Version) (*semver.Version, error) {
+func (s Strategy) BumpVersion(previous semver.Version, tagSuffix string) (*semver.Version, error) {
 	log.Logger().Debug("Trying to bump the version using semantic release first...")
-	v, err := s.SemanticStrategy.BumpVersion(previous)
+	v, err := s.SemanticStrategy.BumpVersion(previous, tagSuffix)
 	if err == nil {
 		return v, nil
 	}
 
 	if err == semantic.ErrPreviousVersionTagNotFound {
 		log.Logger().Debugf("The git repository has no tag for the previous version %s - fallback to incrementing the patch component of the previous version", previous.String())
-		next := previous.IncPatch()
+		next := strategy.IncPatch(previous, tagSuffix)
 		return &next, nil
 	}
 

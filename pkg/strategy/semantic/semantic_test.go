@@ -19,6 +19,7 @@ func TestBumpVersion(t *testing.T) {
 		name             string
 		strategy         Strategy
 		previous         semver.Version
+		tagSuffix        string
 		expected         *semver.Version
 		expectedErrorMsg string
 	}{
@@ -105,6 +106,36 @@ feat!: a breaking feature`,
 			previous: *semver.MustParse("1.1.0"),
 			expected: semver.MustParse("2.0.0"),
 		},
+		{
+			name: "patch bump with prerelease matching tagSuffix",
+			strategy: Strategy{
+				CommitHeadlinesString: "fix: a fix",
+				TagPrefix:             "v",
+			},
+			previous:  *semver.MustParse("1.0.0-pre"),
+			tagSuffix: "-pre",
+			expected:  semver.MustParse("1.0.1"),
+		},
+		{
+			name: "patch bump with prerelease not matching tagSuffix",
+			strategy: Strategy{
+				CommitHeadlinesString: "fix: a fix",
+				TagPrefix:             "v",
+			},
+			previous:  *semver.MustParse("1.0.0-alpha"),
+			tagSuffix: "-pre",
+			expected:  semver.MustParse("1.0.0"),
+		},
+		{
+			name: "patch bump with prerelease and no tagSuffix",
+			strategy: Strategy{
+				CommitHeadlinesString: "fix: a fix",
+				TagPrefix:             "v",
+			},
+			previous:  *semver.MustParse("1.0.0-pre"),
+			tagSuffix: "",
+			expected:  semver.MustParse("1.0.0"),
+		},
 	}
 
 	// the git repo is stored as a tar.gz archive to make it easy to commit
@@ -119,7 +150,7 @@ feat!: a breaking feature`,
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			actual, err := test.strategy.BumpVersion(test.previous)
+			actual, err := test.strategy.BumpVersion(test.previous, test.tagSuffix)
 			if test.expectedErrorMsg != "" {
 				require.EqualError(t, err, test.expectedErrorMsg)
 				assert.Nil(t, actual)

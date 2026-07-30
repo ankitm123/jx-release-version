@@ -17,6 +17,7 @@ func TestBumpVersion(t *testing.T) {
 		previous             semver.Version
 		expected             *semver.Version
 		expectedErrorMsg     string
+		tagSuffix            string
 	}{
 		{
 			name:                 "increment major",
@@ -48,6 +49,23 @@ func TestBumpVersion(t *testing.T) {
 			previous:             *semver.MustParse("1.2.3"),
 			expected:             semver.MustParse("1.3.0"),
 		},
+		{
+			name:      "patch bump with prerelease matching tagSuffix",
+			previous:  *semver.MustParse("1.0.0-pre"),
+			tagSuffix: "-pre",
+			expected:  semver.MustParse("1.0.1"),
+		},
+		{
+			name:      "patch bump with prerelease not matching tagSuffix",
+			previous:  *semver.MustParse("1.0.0-alpha"),
+			tagSuffix: "-pre",
+			expected:  semver.MustParse("1.0.0"),
+		},
+		{
+			name:     "patch bump with prerelease and no tagSuffix",
+			previous: *semver.MustParse("1.0.0-pre"),
+			expected: semver.MustParse("1.0.0"),
+		},
 	}
 
 	for i := range tests {
@@ -58,7 +76,7 @@ func TestBumpVersion(t *testing.T) {
 			s := Strategy{
 				ComponentToIncrement: test.componentToIncrement,
 			}
-			actual, err := s.BumpVersion(test.previous)
+			actual, err := s.BumpVersion(test.previous, test.tagSuffix)
 			if test.expectedErrorMsg != "" {
 				require.EqualError(t, err, test.expectedErrorMsg)
 				assert.Nil(t, actual)
