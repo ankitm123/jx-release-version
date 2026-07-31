@@ -22,6 +22,6 @@ spec:
       sparseCheckout: true
       changes:
         - regex:
-            pattern: "jenkins-x/jx-release-version@v(.*)"
+            pattern: "jenkins-x-plugins/jx-release-version@v(.*)"
             files:
               - ".github/workflows/*.yaml"
