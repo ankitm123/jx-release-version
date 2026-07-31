@@ -11,6 +11,7 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/jenkins-x-plugins/jx-release-version/v2/pkg/strategy"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
 	"github.com/zbindenren/cc"
 )
@@ -26,7 +27,7 @@ type Strategy struct {
 	TagPrefix             string
 }
 
-func (s Strategy) BumpVersion(previous semver.Version) (*semver.Version, error) {
+func (s Strategy) BumpVersion(previous semver.Version, tagSuffix string) (*semver.Version, error) {
 	var (
 		dir                   = s.Dir
 		err                   error
@@ -76,7 +77,7 @@ func (s Strategy) BumpVersion(previous semver.Version) (*semver.Version, error) 
 		version = previous.IncMinor()
 	default:
 		log.Logger().Debug("Incrementing patch component")
-		version = previous.IncPatch()
+		version = strategy.IncPatch(previous, tagSuffix)
 	}
 
 	return &version, nil

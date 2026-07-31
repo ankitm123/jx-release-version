@@ -17,7 +17,7 @@ func (s Strategy) ReadVersion() (*semver.Version, error) {
 	return validateAndParse(s.Version, s.Strict)
 }
 
-func (s Strategy) BumpVersion(_ semver.Version) (*semver.Version, error) {
+func (s Strategy) BumpVersion(_ semver.Version, _ string) (*semver.Version, error) {
 	log.Logger().Debugf("Using manual version %s (strict: %v)", s.Version, s.Strict)
 	return validateAndParse(s.Version, s.Strict)
 }

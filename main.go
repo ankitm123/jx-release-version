@@ -51,7 +51,7 @@ func init() {
 	wd, _ := os.Getwd()
 	flag.StringVar(&options.dir, "dir", wd, "The directory that contains the git repository. Default to the current working directory.")
 	flag.StringVar(&options.previousVersion, "previous-version", getEnvWithDefault("PREVIOUS_VERSION", "auto"), "The strategy to detect the previous version: auto, from-tag, from-file or manual. Default to the PREVIOUS_VERSION env var.")
-	flag.StringVar(&options.commitHeadlines, "commit-headlines", getEnvWithDefault("COMMIT_HEADLINES", ""), "The commit headline(s) to use for semantic next version instead of the commit()s of a repository. Default to empty.")
+	flag.StringVar(&options.commitHeadlines, "commit-headlines", getEnvWithDefault("COMMIT_HEADLINES", ""), "The commit headline(s) to use for semantic next version instead of the commit()s of a repository. Default to empty. Mainly for testing.")
 	flag.StringVar(&options.nextVersion, "next-version", getEnvWithDefault("NEXT_VERSION", "auto"), "The strategy to calculate the next version: auto, semantic, from-file, increment or manual. Default to the NEXT_VERSION env var.")
 	flag.StringVar(&options.outputFormat, "output-format", getEnvWithDefault("OUTPUT_FORMAT", "{{.Major}}.{{.Minor}}.{{.Patch}}"), "The output format of the next version. Default to the OUTPUT_FORMAT env var.")
 	flag.BoolVar(&options.strictSemver, "strict-semver", false, "Use strict semver validation for the manual strategy. Rejects partial versions (e.g. '1', '1.2') and versions with leading zeros (e.g. '2026.06.29').")
@@ -60,7 +60,7 @@ func init() {
 	flag.BoolVar(&options.printPreviousVersion, "print-previous-version", false, "Instead of printing the next version, print the previous (current) version detected by the previous-version strategy.")
 	flag.BoolVar(&options.tag, "tag", os.Getenv("TAG") == "true", "Perform a git tag")
 	flag.StringVar(&options.tagPrefix, "tag-prefix", getEnvWithDefault("TAG_PREFIX", "v"), "Prefix to use for the git tag")
-	flag.StringVar(&options.tagSuffix, "tag-suffix", getEnvWithDefault("TAG_SUFFIX", ""), "Use with tag flag, adds the given suffix to the tag. Typically something like -pre")
+	flag.StringVar(&options.tagSuffix, "tag-suffix", getEnvWithDefault("TAG_SUFFIX", ""), "Suffix to use for the git tag. Typically something like -pre")
 	flag.BoolVar(&options.pushTag, "push-tag", getEnvWithDefault("PUSH_TAG", "true") == "true", "Use with tag flag, pushes a git tag to the remote branch")
 	flag.BoolVar(&options.fetchTags, "fetch-tags", getEnvWithDefault("FETCH_TAGS", "") == "true", "Fetch tags from the remote origin before detecting the previous version")
 	flag.StringVar(&options.gitName, "git-user", getEnvWithDefault("GIT_NAME", ""), "Name is the personal name of the author and the committer of a commit, use to override Git config")
@@ -93,7 +93,7 @@ func main() {
 		return
 	}
 
-	nextVersion, err := versionBumper().BumpVersion(*previousVersion)
+	nextVersion, err := versionBumper().BumpVersion(*previousVersion, options.tagSuffix)
 	if err != nil {
 		log.Logger().Fatalf("Failed to bump version using %q: %v", options.nextVersion, err)
 	}
